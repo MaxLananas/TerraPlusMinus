@@ -33,20 +33,25 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.min;
+import static java.util.Collections.singletonList;
 import static net.buildtheearth.terraminusminus.substitutes.ChunkPos.blockToCube;
 import static net.buildtheearth.terraminusminus.substitutes.ChunkPos.cubeToMinBlock;
 import static org.bukkit.Material.*;
 import static org.bukkit.block.Biome.*;
 
+/**
+ * A world generator using Terra-- as the generation engine.
+ * It is opinionated and optimized for BTE creative building
+ * (very bland terrain with no features at all).
+ */
 public class RealWorldGenerator extends ChunkGenerator {
 
     @Getter
     private final EarthGeneratorSettings settings;
     @Getter
     private final int yOffset;
-    private Location spawnLocation = null;
 
-    private final LoadingCache<ChunkPos, CompletableFuture<CachedChunkData>> cache;
+    private final LoadingCache<@NotNull ChunkPos, @NotNull CompletableFuture<CachedChunkData>> cache;
     private final CustomBiomeProvider customBiomeProvider;
 
 
@@ -107,41 +112,18 @@ public class RealWorldGenerator extends ChunkGenerator {
 
     @Override
     public void generateNoise(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull ChunkData chunkData) {
-
         CachedChunkData terraData = this.getTerraChunkData(chunkX, chunkZ);
 
         int minWorldY = worldInfo.getMinHeight();
         int maxWorldY = worldInfo.getMaxHeight();
 
-        // We start by finding the lowest 16x16x16 cube that's not underground
-        //TODO expose the minimum surface Y in Terra-- so we don't have to scan this way
+        // Optimization: if the entire chunk is above the surface, there is nothing to do
         int minSurfaceCubeY = blockToCube(minWorldY - this.yOffset);
-        int maxWorldCubeY = blockToCube(maxWorldY - this.yOffset);
         if (terraData.aboveSurface(minSurfaceCubeY)) {
-            return; // All done, it's all air
-        }
-        while (minSurfaceCubeY < maxWorldCubeY && terraData.belowSurface(minSurfaceCubeY)) {
-            minSurfaceCubeY++;
+            return;
         }
 
-        // We can now fill most of the underground in a single call.
-        // Hopefully the underlying implementation can take advantage of that...
-        if (minSurfaceCubeY >= maxWorldCubeY) {
-            chunkData.setRegion(
-                    0, minWorldY, 0,
-                    16, maxWorldY, 16,
-                    STONE
-            );
-            return; // All done, everything is underground
-        } else {
-            chunkData.setRegion(
-                    0, minWorldY, 0,
-                    0, cubeToMinBlock(minSurfaceCubeY), 0,
-                    STONE
-            );
-        }
-
-        // And now, we build the actual terrain shape on top of everything
+        // And now, we build the actual terrain shape
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int groundHeight = min(terraData.groundHeight(x, z) + this.yOffset, maxWorldY - 1);
@@ -193,7 +175,7 @@ public class RealWorldGenerator extends ChunkGenerator {
                     }
                 }
 
-                // We don't want grass, snow, and all underwater
+                // We don't want grass, snow, and all that underwater
                 boolean isUnderWater = groundY + 1 >= maxWorldY || chunkData.getBlockData(x, groundY + 1, z).getMaterial().equals(WATER);
                 if (isUnderWater && GRASS_LIKE_MATERIALS.contains(surfaceBlock.getMaterial())) {
                     surfaceBlock = this.underwaterBlock;
@@ -251,14 +233,13 @@ public class RealWorldGenerator extends ChunkGenerator {
     @Override
     @NotNull
     public List<BlockPopulator> getDefaultPopulators(@NotNull World world) {
-        return Collections.singletonList(new TreePopulator(customBiomeProvider, yOffset));
+        return singletonList(new TreePopulator(this.customBiomeProvider, yOffset));
     }
 
-    @Override
     @Nullable
+    @Override
     public Location getFixedSpawnLocation(@NotNull World world, @NotNull Random random) {
-        if (spawnLocation == null)
-            spawnLocation = new Location(world, 3517417, 58, -5288234);
-        return spawnLocation;
+        return new Location(world, 3517417, 58, -5288234);
     }
+
 }
