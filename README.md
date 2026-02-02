@@ -50,6 +50,8 @@ Custom Tree Generation:
 
 Permission node: `t+-.admin` - Bypasses the coordinate bounds of tpll
 
+Permission node: `t+-.autoteleport` - Enables automatic teleportation between linked worlds
+
 # Installation
 
 1. Download the latest release
