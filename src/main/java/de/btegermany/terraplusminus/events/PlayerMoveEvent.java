@@ -85,6 +85,10 @@ public class PlayerMoveEvent implements Listener {
 
         Player p = event.getPlayer();
 
+        if (!p.hasPermission("t+-.autoteleport")) {
+            return;
+        }
+
         // Prevent repeated scheduling while on cooldown
         if (isOnTeleportCooldown(p)) {
             return;
