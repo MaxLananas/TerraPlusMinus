@@ -49,9 +49,16 @@ import static net.daporkchop.lib.common.util.PValidation.checkState;
 
 public final class Terraplusminus extends JavaPlugin implements Listener {
 
+    /**
+     * @deprecated Static Fields should not be used, because else config reloads won't work properly.
+     * We'll rework the whole config system in a future update to make it more robust. Maybe switching to configurate.
+     */
     @Deprecated(since = "1.6.0", forRemoval = true)
     public static FileConfiguration config;
 
+    /**
+     * @deprecated We'll switch to basic dependency injection from now on. Static Fields should not be used.
+     */
     @Deprecated(since = "1.6.0", forRemoval = true)
     public static Terraplusminus instance;
 
@@ -61,19 +68,23 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        new Metrics(this, 28392);
+        new Metrics(this, 28392); // https://bstats.org/plugin/bukkit/Terraplusminus/28392
         instance = this;
 
+        // Config ------------------]
         ConfigurationSerialization.registerClass(ConfigurationSerializable.class);
         this.saveDefaultConfig();
         config = getConfig();
         this.updateConfig();
+        // --------------------------
 
+        // Set-up Terra-- so it looks for its config files in our plugin dir, and then copy its default files there
         this.setupTerraMinusMinus();
         this.extractTerraConfigFileToPluginDir("/net/buildtheearth/terraminusminus/dataset/osm/osm.json5", "osm.json5");
         this.extractTerraConfigFileToPluginDir("config/readme-heights.md", "heights/README.md");
         this.extractTerraConfigFileToPluginDir("config/readme-tree_cover.md", "tree_cover/README.md");
 
+        // Register plugin messaging channel
         PlayerHashMapManagement playerHashMapManagement = new PlayerHashMapManagement();
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bungeecord:terraplusminus");
 
@@ -86,6 +97,7 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
                 pluginMessageListener
         );
 
+        // Linked Server current server initialization
         if (getConfig().getBoolean(Properties.LINKED_WORLDS_ENABLED)
                 && getConfig().getString(Properties.LINKED_WORLDS_METHOD, "").equalsIgnoreCase("SERVER")) {
 
@@ -93,7 +105,9 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
             this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", pluginMessageListener);
             getComponentLogger().debug("Linked server initialization successful");
         }
+        // --------------------------
 
+        // Registering events
         Bukkit.getPluginManager().registerEvents(this, this);
 
         if (getConfig().getBoolean("height_in_actionbar")
@@ -113,9 +127,10 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
                     this
             );
         }
+        // --------------------------
 
         TerraConfig.reducedConsoleMessages =
-                getConfig().getBoolean("reduced_console_messages");
+                getConfig().getBoolean("reduced_console_messages"); // Disables console log of fetching data
 
         registerCommands();
 
@@ -130,8 +145,10 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        // Unregister plugin messaging channel
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         this.getServer().getMessenger().unregisterIncomingPluginChannel(this);
+        // --------------------------
 
         this.getComponentLogger().info("Plugin deactivated");
     }
@@ -147,6 +164,8 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
                 Bukkit.getWorlds().getFirst().getUID().equals(world.getUID());
 
         if (shouldInstallHeightDatapack && isDefaultWorld) {
+            // Datapacks should be installed in the default world and will apply to all of them.
+            // Getting the default world this way is reliable according to https://www.spigotmc.org/threads/ask-getting-the-servers-main-world.349626/#post-3238378
             this.enforceDatapackInstallation("world-height-datapack.zip", world);
         }
     }
@@ -157,6 +176,7 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
             @NotNull String worldName,
             String id
     ) {
+        // Multiverse different y-offset support
         int yOffset = 0;
 
         if (getConfig().getBoolean(Properties.LINKED_WORLDS_ENABLED)
@@ -216,9 +236,13 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
             throw new RuntimeException(io);
         }
 
+        this.getComponentLogger().error(
+                "Datapack {} was missing from world {} and has been automatically installed by Terraplusminus. The server needs to be manually restarted for the change to take effect. Terraplusminus will now shutdown the server so it can be restarted.",
+                datapackName, world.getName()
+        );
         Bukkit.getServer().shutdown();
     }
-    
+
     /**
      * @deprecated We'll rework the whole config system in a future update to make it more robust. Maybe switching to configurate.
      * The current system has some flaws like only can update one config version at a time and is generally hard to maintain.
@@ -349,36 +373,37 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
-      LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
+        LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
 
-      manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
-        final Commands commands = event.registrar();
+        manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            final Commands commands = event.registrar();
 
-        commands.register(
-                TpllCommand.create(),
-                "tpll",
-                List.of("tpc")
-        );
+            commands.register(
+                    TpllCommand.create(),
+                    "tpll",
+                    List.of("tpc")
+            );
 
-        commands.register(
-                "where",
-                "Gives you the longitude and latitude of your minecraft coordinates",
-                new WhereCommand()
-        );
+            commands.register(
+                    "where",
+                    "Gives you the longitude and latitude of your minecraft coordinates",
+                    new WhereCommand()
+            );
 
-        commands.register(
-                "offset",
-                "Displays the x,y and z offset of your world",
-                new OffsetCommand()
-        );
+            commands.register(
+                    "offset",
+                    "Displays the x,y and z offset of your world",
+                    new OffsetCommand()
+            );
 
-        commands.register(
-                "distortion",
-                "Displays projection distortion at your current location",
-                new DistortionCommand()
-        );
-    });
-}
+            commands.register(
+                    "distortion",
+                    "Displays projection distortion at your current location",
+                    new DistortionCommand()
+            );
+        });
+    }
+
     private void setupTerraMinusMinus() {
         FolderMigrator.migrateTerraPlusPlusFolder();
         Disk.setConfigRoot(this.getDataFolder());
@@ -422,5 +447,4 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
         }
         this.getComponentLogger().info("Created default Terra-- configuration at {}", droppedFile.getAbsolutePath());
     }
-
 }
