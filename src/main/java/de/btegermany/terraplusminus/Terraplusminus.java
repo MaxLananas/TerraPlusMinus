@@ -1,5 +1,6 @@
 package de.btegermany.terraplusminus;
 
+import de.btegermany.terraplusminus.commands.DistortionCommand;
 import de.btegermany.terraplusminus.commands.OffsetCommand;
 import de.btegermany.terraplusminus.commands.TpllCommand;
 import de.btegermany.terraplusminus.commands.WhereCommand;
@@ -348,15 +349,36 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
-        LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
-        manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
-            final Commands commands = event.registrar();
-            commands.register(TpllCommand.create(), "tpll", List.of("tpc"));
-            commands.register("where", "Gives you the longitude and latitude of your minecraft coordinates", new WhereCommand());
-            commands.register("offset", "Displays the x,y and z offset of your world", new OffsetCommand());
-        });
-    }
+      LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
 
+      manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+        final Commands commands = event.registrar();
+
+        commands.register(
+                TpllCommand.create(),
+                "tpll",
+                List.of("tpc")
+        );
+
+        commands.register(
+                "where",
+                "Gives you the longitude and latitude of your minecraft coordinates",
+                new WhereCommand()
+        );
+
+        commands.register(
+                "offset",
+                "Displays the x,y and z offset of your world",
+                new OffsetCommand()
+        );
+
+        commands.register(
+                "distortion",
+                "Displays projection distortion at your current location",
+                new DistortionCommand()
+        );
+    });
+}
     private void setupTerraMinusMinus() {
         FolderMigrator.migrateTerraPlusPlusFolder();
         Disk.setConfigRoot(this.getDataFolder());
