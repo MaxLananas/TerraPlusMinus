@@ -17,7 +17,7 @@ public class DistortionCommand implements BasicCommand {
     private static final double DEFAULT_D = 1E-7;
 
     @Override
-    public void execute(@NotNull CommandSourceStack stack, @NotNull String[] args) {
+    public void execute(@NotNull CommandSourceStack stack, String @NotNull [] args) {
 
         if (!(stack.getSender() instanceof Player player)) {
             stack.getSender().sendMessage(
