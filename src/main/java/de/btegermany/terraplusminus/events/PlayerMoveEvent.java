@@ -15,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,7 @@ public class PlayerMoveEvent implements Listener {
     }
 
     @EventHandler
-    void onPlayerMove(org.bukkit.event.player.@NotNull PlayerMoveEvent event) {
+    void onPlayerMove(org.bukkit.event.player.@NonNull PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (plugin.getConfig().getBoolean(Properties.ACTIONBAR_HEIGHT)) setHeightInActionBar(player);
     }
@@ -69,7 +68,7 @@ public class PlayerMoveEvent implements Listener {
         }, 0, 20);
     }
 
-    private void setHeightInActionBar(@NotNull Player p) {
+    private void setHeightInActionBar(@NonNull Player p) {
         worldHashMap.putIfAbsent(p.getWorld().getName(), yOffsetConfigEntry);
         if (p.getInventory().getItemInMainHand().getType() != Material.DEBUG_STICK) {
             int height = p.getLocation().getBlockY() - worldHashMap.get(p.getWorld().getName());
@@ -121,7 +120,7 @@ public class PlayerMoveEvent implements Listener {
         }.runTaskLater(plugin, 60L);
     }
 
-    private void teleportPlayer(@NotNull LinkedWorld linkedWorld, @NotNull Location location, Player p) {
+    private void teleportPlayer(@NonNull LinkedWorld linkedWorld, @NonNull Location location, Player p) {
         setTeleportCooldown(p);
 
         World tpWorld = Bukkit.getWorld(linkedWorld.getWorldName());

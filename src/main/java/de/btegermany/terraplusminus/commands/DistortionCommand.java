@@ -10,12 +10,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class DistortionCommand implements BasicCommand {
 
     @Override
-    public void execute(@NotNull CommandSourceStack stack, String @NotNull [] args) {
+    public void execute(@NonNull CommandSourceStack stack, String @NonNull [] args) {
 
         if (!(stack.getSender() instanceof Player player)) {
             stack.getSender().sendMessage(

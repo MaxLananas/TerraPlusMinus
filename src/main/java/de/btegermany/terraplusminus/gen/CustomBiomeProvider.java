@@ -10,7 +10,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.WorldInfo;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,9 +33,9 @@ public class CustomBiomeProvider extends BiomeProvider {
         this.projection = projection;
     }
 
-    @NotNull
+    @NonNull
     @Override
-    public Biome getBiome(@NotNull WorldInfo worldInfo, int x, int y, int z) {
+    public Biome getBiome(@NonNull WorldInfo worldInfo, int x, int y, int z) {
         if (Terraplusminus.config.getBoolean("biomes.use_dataset")) {
             double[] coords;
             try {
@@ -65,9 +65,9 @@ public class CustomBiomeProvider extends BiomeProvider {
         return biomeData;
     }
 
-    @NotNull
+    @NonNull
     @Override
-    public List<Biome> getBiomes(@NotNull WorldInfo worldInfo) {
+    public List<Biome> getBiomes(@NonNull WorldInfo worldInfo) {
         return biomeList;
     }
 

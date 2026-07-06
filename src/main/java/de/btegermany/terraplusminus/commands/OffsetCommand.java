@@ -4,15 +4,12 @@ import de.btegermany.terraplusminus.Terraplusminus;
 import de.btegermany.terraplusminus.utils.ConfigurationHelper;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class OffsetCommand implements BasicCommand {
     @Override
-    public void execute(@NotNull CommandSourceStack stack, @NotNull String[] args) {
+    public void execute(@NonNull CommandSourceStack stack, @NonNull String[] args) {
         if (stack.getSender() instanceof Player player) {
             if (!player.hasPermission("t+-.offset")) {
                 player.sendMessage(Terraplusminus.config.getString("prefix") + "§7No permission for /offset");
