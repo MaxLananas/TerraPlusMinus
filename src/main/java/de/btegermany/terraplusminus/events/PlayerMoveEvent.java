@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -125,7 +126,7 @@ public class PlayerMoveEvent implements Listener {
 
         World tpWorld = Bukkit.getWorld(linkedWorld.getWorldName());
 
-        Location newLocation = new Location(tpWorld, location.getX() + xOffset, tpWorld.getHighestBlockYAt(location.getBlockX(), location.getBlockZ()),
+        Location newLocation = new Location(tpWorld, location.getX() + xOffset, Objects.requireNonNull(tpWorld).getHighestBlockYAt(location.getBlockX(), location.getBlockZ()),
                 location.getZ() + zOffset, location.getYaw(), location.getPitch());
         p.teleportAsync(newLocation);
         if (p.getAllowFlight()) p.setFlying(true);
