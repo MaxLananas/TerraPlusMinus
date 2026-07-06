@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import de.btegermany.terraplusminus.Terraplusminus;
 import de.btegermany.terraplusminus.gen.CustomBiomeProvider;
+import de.btegermany.terraplusminus.utils.Properties;
 import net.buildtheearth.terraminusminus.generator.CachedChunkData;
 import net.buildtheearth.terraminusminus.generator.ChunkDataLoader;
 import net.buildtheearth.terraminusminus.generator.EarthGeneratorPipelines;
@@ -59,7 +60,7 @@ public class TreePopulator extends BlockPopulator {
         this.xOffset = Terraplusminus.config.getInt("terrain_offset.x");
         this.yOffset = yOffset;
         this.zOffset = Terraplusminus.config.getInt("terrain_offset.z");
-        this.generateTrees = Terraplusminus.config.getBoolean("generate_trees");
+        this.generateTrees = Terraplusminus.config.getBoolean(Properties.GENERATE_TREES);
         this.surface = Terraplusminus.config.getString("surface_material");
         this.cache = CacheBuilder.newBuilder()
                 .expireAfterAccess(5L, TimeUnit.MINUTES)

@@ -19,6 +19,7 @@ public class Properties {
     public static final String LINKED_WORLDS_METHOD = "linked_worlds.method";
     public static final String PASSTHROUGH_TPLL = "passthrough_tpll";
     public static final String ACTIONBAR_HEIGHT = "height_in_actionbar";
+    public static final String GENERATE_TREES = "generate_trees";
     public static final String SURFACE_MATERIAL = "surface_material";
 
     /**
