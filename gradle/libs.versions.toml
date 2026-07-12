@@ -3,13 +3,15 @@
 # https://central.sonatype.com/artifact/org.bstats/bstats-bukkit
 bstats = "3.2.1"
 # @pin https://github.com/PorkStudios/PorkLib - needs to be the same as in TerraMinusMinus
-daporkchop-lib-common = "0.5.7-SNAPSHOT"
+daporkchop-lib-common = "0.5.7"
 # https://central.sonatype.com/artifact/com.fasterxml.jackson.core/jackson-databind
-jackson-databind = "2.22.0"
+jackson-databind = "2.22.1"
 # @pin https://repo.papermc.io/#browse/browse:maven-snapshots:io%2Fpapermc%2Fpaper%2Fpaper-api Newer Versions require java 25
 paper-api = "1.21.11-R0.1-SNAPSHOT"
 # https://maven.smyler.net/#/releases/net/buildtheearth/terraminusminus/terraminusminus-bukkit
 terraminusminus = "2.2.0-1.21.8"
+# https://maven.smyler.net/#/releases/net/buildtheearth/terraminusminus/terraminusminus-bukkit - use fork which uses daporkchop lib as releases
+terraminusminus = "2.2.1-1.21.8"
 #
 # Plugins
 #
@@ -17,7 +19,7 @@ terraminusminus = "2.2.0-1.21.8"
 lombok = "9.5.0"
 # https://docs.eldoria.de/pluginyml/paper/#kotlin
 plugin-yml = "0.9.0"
-#
+# https://plugins.gradle.org/plugin/org.sonarqube - for CI
 sonarqube = "7.3.1.8318"
 
 [libraries]

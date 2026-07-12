@@ -11,7 +11,9 @@ repositories {
     mavenCentral()
     // mavenLocal() - Only use this for testing if ever
 
-    maven("https://maven.smyler.net/releases/")
+    //maven("https://maven.smyler.net/releases/")
+
+    maven("https://maven.buildtheearth.net/releases") // T-- & Porkchop Lib
 
     exclusiveContent {
         forRepository {
