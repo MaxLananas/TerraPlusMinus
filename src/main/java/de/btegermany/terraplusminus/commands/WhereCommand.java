@@ -11,19 +11,19 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class WhereCommand implements BasicCommand {
 
     private final EarthGeneratorSettings bteGeneratorSettings = EarthGeneratorSettings.parse(EarthGeneratorSettings.BTE_DEFAULT_SETTINGS);
 
     @Override
-    public void execute(@NotNull CommandSourceStack stack, @NotNull String[] args) {
-        if (!(stack.getSender() instanceof Player)) {
+    public void execute(@NonNull CommandSourceStack stack, String @Nullable [] args) {
+        if (!(stack.getSender() instanceof Player player)) {
             stack.getSender().sendMessage("This command can only be used by players!");
             return;
         }
-        Player player = (Player) stack.getSender();
         if (!player.hasPermission("t+-.where")) {
             player.sendMessage(Terraplusminus.config.getString("prefix") + "§7No permission for /where");
             return;

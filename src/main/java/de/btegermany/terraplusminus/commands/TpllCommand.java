@@ -33,7 +33,6 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -86,7 +85,7 @@ public class TpllCommand {
      * @param target The player to teleport
      * @param args   The coordinate arguments string (latitude, longitude, optional height)
      */
-    private static void execute(CommandSender sender, @NotNull Player target, @NotNull String args) {
+    private static void execute(CommandSender sender, @NonNull Player target, @NonNull String args) {
         World tpWorld = target.getWorld();
         FileConfiguration config = Terraplusminus.instance.getConfig();
         double minLat = config.getDouble(Properties.MIN_LAT);
@@ -265,7 +264,7 @@ public class TpllCommand {
      * @param geoCoords The geo coordinates (for message display)
      * @param yOffset   The configured terrain offset
      */
-    private static void finalizeTeleport(@NotNull Player target, @NonNull World tpWorld, @NonNull Vector mcCoords, LatLng geoCoords, int yOffset) {
+    private static void finalizeTeleport(@NonNull Player target, @NonNull World tpWorld, @NonNull Vector mcCoords, LatLng geoCoords, int yOffset) {
 
         Terraplusminus.instance.getComponentLogger().debug("Current world max height: {}, min height: {}, requested height: {}", tpWorld.getMaxHeight(), tpWorld.getMinHeight(), mcCoords.getBlockY());
 
@@ -288,7 +287,7 @@ public class TpllCommand {
         target.sendMessage(prefix + "§7Teleported to " + geoCoords.getLat() + ", " + geoCoords.getLng() + ", " + (mcCoords.getBlockY() - yOffset) + ".");
     }
 
-    private static boolean getHeightFromMapsAndTeleportIfThere(@NotNull Player target, World tpWorld, LatLongHeight latLngHeight, int yOffset, double x, double z) {
+    private static boolean getHeightFromMapsAndTeleportIfThere(@NonNull Player target, World tpWorld, LatLongHeight latLngHeight, int yOffset, double x, double z) {
         var worlds = ConfigurationHelper.getWorlds();
         for (var world : worlds) {
             if (world.getWorldName().equalsIgnoreCase(tpWorld.getName())) {
@@ -316,12 +315,12 @@ public class TpllCommand {
     // </editor-fold>
 
     // <editor-fold desc="Messaging">
-    private static int sendUsageMessage(@NotNull CommandContext<CommandSourceStack> ctx) {
+    private static int sendUsageMessage(@NonNull CommandContext<CommandSourceStack> ctx) {
         sendUsageMessage(ctx.getSource().getSender());
         return Command.SINGLE_SUCCESS;
     }
 
-    private static void sendUsageMessage(@NotNull CommandSender sender) {
+    private static void sendUsageMessage(@NonNull CommandSender sender) {
         sender.sendMessage(prefix + "§7Invalid coordinates or command usage!\n" +
                 "Usage: /tpll <latitude> <longitude> [height]\n" +
                 "       /tpll -p <player/@selector> <latitude> <longitude> [height]");
@@ -337,7 +336,7 @@ public class TpllCommand {
      * @param player       The player to teleport
      * @param geoCoords    The geo coordinates
      */
-    private static void sendPluginMessageToBungeeBridge(boolean isNextServer, @NotNull Player player,
+    private static void sendPluginMessageToBungeeBridge(boolean isNextServer, @NonNull Player player,
                                                         LatLng geoCoords) {
         Terraplusminus plugin = (Terraplusminus) JavaPlugin.getProvidingPlugin(Terraplusminus.class);
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -409,7 +408,7 @@ public class TpllCommand {
      * @return {@link Command#SINGLE_SUCCESS}
      * @throws CommandSyntaxException If player selector resolution fails
      */
-    private static int executeTarget(@NotNull CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    private static int executeTarget(@NonNull CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Terraplusminus.instance.getComponentLogger().debug("executeTarget called - force teleport branch");
         final PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("players", PlayerSelectorArgumentResolver.class);
         final List<Player> targets = targetResolver.resolve(ctx.getSource());
@@ -427,7 +426,7 @@ public class TpllCommand {
     /**
      * Executes self-teleport using coordinates only.
      */
-    private static int executeDirect(@NotNull CommandContext<CommandSourceStack> ctx) {
+    private static int executeDirect(@NonNull CommandContext<CommandSourceStack> ctx) {
         Terraplusminus.instance.getComponentLogger().debug("executeDirect called - self teleport branch");
         final String latLonHeight = ctx.getArgument(LAT_LON_HEIGHT, String.class);
         Terraplusminus.instance.getComponentLogger().debug("coords: '{}'", latLonHeight);
@@ -441,7 +440,7 @@ public class TpllCommand {
     /**
      * Checks for {@code t+-.forcetpll} or {@code t+-.tpll} (if self-teleporting).
      */
-    private static boolean isPermitted(@NotNull CommandSourceStack source) {
+    private static boolean isPermitted(@NonNull CommandSourceStack source) {
         return source.getSender().hasPermission(TPLL_OTHERS_PERMISSION) ||
                 (source.getSender() == source.getExecutor() && source.getSender().hasPermission("t+-.tpll"));
     }
@@ -449,7 +448,7 @@ public class TpllCommand {
     /**
      * Checks for {@code t+-.forcetpll} permission.
      */
-    private static boolean isPermittedTarget(@NotNull CommandSourceStack commandSourceStack) {
+    private static boolean isPermittedTarget(@NonNull CommandSourceStack commandSourceStack) {
         return commandSourceStack.getSender().hasPermission(TPLL_OTHERS_PERMISSION);
     }
     // </editor-fold>
@@ -470,7 +469,7 @@ public class TpllCommand {
      * @return A {@link LatLongHeight} record containing parsed coordinates and height
      */
     @Contract("_ -> new")
-    private static @NotNull LatLongHeight parseArguments(String args) {
+    private static @NonNull LatLongHeight parseArguments(String args) {
         Terraplusminus.instance.getComponentLogger().debug("parseArguments input: '{}'", args);
 
         String[] argsArray = args.split(" ");
@@ -518,7 +517,7 @@ public class TpllCommand {
      * @param toIndex Starting index
      * @return Selected array
      */
-    private static String @NotNull [] inverseSelectArray(String[] args, int toIndex) {
+    private static String @NonNull [] inverseSelectArray(String[] args, int toIndex) {
         List<String> array = new ArrayList<>(Arrays.asList(args).subList(0, toIndex));
         return array.toArray(String[]::new);
     }

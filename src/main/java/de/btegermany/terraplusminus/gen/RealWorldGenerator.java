@@ -24,8 +24,8 @@ import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class RealWorldGenerator extends ChunkGenerator {
     @Getter
     private final int yOffset;
 
-    private final LoadingCache<@NotNull ChunkPos, @NotNull CompletableFuture<CachedChunkData>> cache;
+    private final LoadingCache<@NonNull ChunkPos, @NonNull CompletableFuture<CachedChunkData>> cache;
     private final CustomBiomeProvider customBiomeProvider;
 
 
@@ -116,7 +116,7 @@ public class RealWorldGenerator extends ChunkGenerator {
 
 
     @Override
-    public void generateNoise(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull ChunkData chunkData) {
+    public void generateNoise(@NonNull WorldInfo worldInfo, @NonNull Random random, int chunkX, int chunkZ, @NonNull ChunkData chunkData) {
         CachedChunkData terraData = this.getTerraChunkData(chunkX, chunkZ);
 
         int minWorldY = worldInfo.getMinHeight();
@@ -148,12 +148,12 @@ public class RealWorldGenerator extends ChunkGenerator {
     }
 
     @Override
-    public BiomeProvider getDefaultBiomeProvider(@NotNull WorldInfo worldInfo) {
+    public BiomeProvider getDefaultBiomeProvider(@NonNull WorldInfo worldInfo) {
         return this.customBiomeProvider;
     }
 
     @Override
-    public void generateSurface(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull ChunkData chunkData) {
+    public void generateSurface(@NonNull WorldInfo worldInfo, @NonNull Random random, int chunkX, int chunkZ, @NonNull ChunkData chunkData) {
         CachedChunkData terraData = this.getTerraChunkData(chunkX, chunkZ);
         final int minWorldY = worldInfo.getMinHeight();
         final int maxWorldY = worldInfo.getMaxHeight();
@@ -212,7 +212,7 @@ public class RealWorldGenerator extends ChunkGenerator {
     }
 
     @Override
-    public int getBaseHeight(@NotNull WorldInfo worldInfo, @NotNull Random random, int x, int z, @NotNull HeightMap heightMap) {
+    public int getBaseHeight(@NonNull WorldInfo worldInfo, @NonNull Random random, int x, int z, @NonNull HeightMap heightMap) {
         int chunkX = blockToCube(x);
         int chunkZ = blockToCube(z);
         x -= cubeToMinBlock(chunkX);
@@ -229,7 +229,7 @@ public class RealWorldGenerator extends ChunkGenerator {
     }
 
     @Override
-    public boolean canSpawn(@NotNull World world, int x, int z) {
+    public boolean canSpawn(@NonNull World world, int x, int z) {
         Block highest = world.getBlockAt(x, world.getHighestBlockYAt(x, z), z);
 
         return switch (world.getEnvironment()) {
@@ -241,14 +241,14 @@ public class RealWorldGenerator extends ChunkGenerator {
     }
 
     @Override
-    @NotNull
-    public List<BlockPopulator> getDefaultPopulators(@NotNull World world) {
+    @NonNull
+    public List<BlockPopulator> getDefaultPopulators(@NonNull World world) {
         return singletonList(new TreePopulator(this.customBiomeProvider, yOffset));
     }
 
     @Nullable
     @Override
-    public Location getFixedSpawnLocation(@NotNull World world, @NotNull Random random) {
+    public Location getFixedSpawnLocation(@NonNull World world, @NonNull Random random) {
         return new Location(world, 3517417, 58, -5288234);
     }
 

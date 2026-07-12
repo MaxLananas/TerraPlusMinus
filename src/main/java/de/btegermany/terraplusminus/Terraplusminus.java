@@ -4,26 +4,22 @@ import de.btegermany.terraplusminus.commands.DistortionCommand;
 import de.btegermany.terraplusminus.commands.OffsetCommand;
 import de.btegermany.terraplusminus.commands.TpllCommand;
 import de.btegermany.terraplusminus.commands.WhereCommand;
-import de.btegermany.terraplusminus.events.PlayerCommandPreprocessEvent;
+import de.btegermany.terraplusminus.events.PlayerCommandEvent;
 import de.btegermany.terraplusminus.events.PlayerJoinEvent;
 import de.btegermany.terraplusminus.events.PlayerMoveEvent;
 import de.btegermany.terraplusminus.events.PluginMessageEvent;
 import de.btegermany.terraplusminus.gen.RealWorldGenerator;
 import de.btegermany.terraplusminus.utils.*;
-
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-
 import lombok.Getter;
 import lombok.Setter;
-
 import net.buildtheearth.terraminusminus.TerraConfig;
 import net.buildtheearth.terraminusminus.TerraConstants;
 import net.buildtheearth.terraminusminus.util.http.Disk;
 import net.buildtheearth.terraminusminus.util.http.Http;
-
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -37,7 +33,7 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -123,7 +119,7 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
         String passthroughTpll = getConfig().getString(Properties.PASSTHROUGH_TPLL);
         if (passthroughTpll != null && !passthroughTpll.isEmpty()) {
             Bukkit.getPluginManager().registerEvents(
-                    new PlayerCommandPreprocessEvent(passthroughTpll),
+                    new PlayerCommandEvent(passthroughTpll),
                     this
             );
         }
@@ -154,7 +150,7 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onWorldInit(@NotNull WorldInitEvent event) {
+    public void onWorldInit(@NonNull WorldInitEvent event) {
         World world = event.getWorld();
 
         boolean shouldInstallHeightDatapack =
@@ -172,8 +168,8 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
 
     @Contract("_, _ -> new")
     @Override
-    public @NotNull ChunkGenerator getDefaultWorldGenerator(
-            @NotNull String worldName,
+    public @NonNull ChunkGenerator getDefaultWorldGenerator(
+            @NonNull String worldName,
             String id
     ) {
         // Multiverse different y-offset support
@@ -197,7 +193,7 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
 
     public void enforceDatapackInstallation(
             String datapackResourcePath,
-            @NotNull World world
+            @NonNull World world
     ) {
         String datapackName = Path.of(datapackResourcePath)
                 .getFileName()
@@ -414,12 +410,12 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
         Http.userAgent(userAgent);
     }
 
-    private @NotNull String getVersion() {
+    private @NonNull String getVersion() {
         PluginMeta meta = this.getPluginMeta();
         return meta.getVersion();
     }
 
-    private @NotNull String createHttpUserAgent() {
+    private @NonNull String createHttpUserAgent() {
         PluginMeta metadata = this.getPluginMeta();
         return format(Locale.ENGLISH, "%s/%s (%s/%s; +%s)",
                 metadata.getName(),
@@ -430,7 +426,7 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
         );
     }
 
-    private void extractTerraConfigFileToPluginDir(@NotNull String resourcePath, @NotNull String dropPath) {
+    private void extractTerraConfigFileToPluginDir(@NonNull String resourcePath, @NonNull String dropPath) {
         File droppedFile = this.getDataPath().resolve(dropPath).toFile();
         if (droppedFile.exists()) {
             this.getComponentLogger().debug("Terra-- config file {} is already present in plugin directory", droppedFile.getAbsolutePath());
