@@ -8,8 +8,8 @@ daporkchop-lib-common = "0.5.7"
 jackson-databind = "2.22.1"
 # @pin https://repo.papermc.io/#browse/browse:maven-snapshots:io%2Fpapermc%2Fpaper%2Fpaper-api Newer Versions require java 25
 paper-api = "1.21.11-R0.1-SNAPSHOT"
-# https://maven.smyler.net/#/releases/net/buildtheearth/terraminusminus/terraminusminus-bukkit
-terraminusminus = "2.2.0-1.21.8"
+# https://github.com/OakLoaf/PluginUpdater/releases https://repo.lushplugins.org/#/releases/org/lushplugins/pluginupdater/updater.paper-api
+pluginupdater = "3.0.0"
 # https://maven.smyler.net/#/releases/net/buildtheearth/terraminusminus/terraminusminus-bukkit - use fork which uses daporkchop lib as releases
 terraminusminus = "2.2.1-1.21.8"
 #
@@ -27,6 +27,8 @@ bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 daporkchop-lib-common = { module = "net.daporkchop.lib:common", version.ref = "daporkchop-lib-common" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson-databind" }
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper-api" }
+pluginupdater-paper = { module = "org.lushplugins.pluginupdater:updater.paper-api", version.ref = "pluginupdater" }
+pluginupdater-common = { module = "org.lushplugins.pluginupdater:updater.common-api", version.ref = "pluginupdater" }
 terraminusminus = { module = "net.buildtheearth.terraminusminus:terraminusminus-bukkit", version.ref = "terraminusminus" }
 
 [plugins]

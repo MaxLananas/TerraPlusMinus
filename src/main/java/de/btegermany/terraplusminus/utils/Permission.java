@@ -1,5 +1,6 @@
 package de.btegermany.terraplusminus.utils;
 
+import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -12,8 +13,10 @@ public enum Permission {
     TPLL_OTHER_WORLD_CMD(TPLL_CMD.node + ".otherWorld"),
     FORCETPLL_CMD(Properties.NonConfigurable.PERMISSION_PREFIX + "forcetpll"),
     ADMIN(Properties.NonConfigurable.PERMISSION_PREFIX + "admin"),
-    AUTOTELEPORT(Properties.NonConfigurable.PERMISSION_PREFIX + "autoteleport");
+    AUTOTELEPORT(Properties.NonConfigurable.PERMISSION_PREFIX + "autoteleport"),
+    UPDATENOTIFY(Properties.NonConfigurable.PERMISSION_PREFIX + "notify.update");
 
+    @Getter
     private final String node;
 
     Permission(String node) {
