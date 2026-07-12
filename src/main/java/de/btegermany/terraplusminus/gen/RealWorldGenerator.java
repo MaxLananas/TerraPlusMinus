@@ -27,7 +27,10 @@ import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -74,11 +77,12 @@ public class RealWorldGenerator extends ChunkGenerator {
             SNOW
     );
 
-    public RealWorldGenerator(int yOffset, Terraplusminus plugin) {
+    public RealWorldGenerator(int yOffset, @NotNull Terraplusminus plugin) {
 
         Http.configChanged(); // This ensures the T-- default config is loaded regarding the number of concurrent http requests for specific urls.
 
         EarthGeneratorSettings settings = EarthGeneratorSettings.parse(EarthGeneratorSettings.BTE_DEFAULT_SETTINGS);
+        if (!plugin.getConfig().getBoolean(Properties.GENERATE_TREES)) settings.withUseDefaultTreeCover(false);
 
         GeographicProjection projection = new OffsetProjectionTransform(
                 settings.projection(),
