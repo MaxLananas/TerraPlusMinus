@@ -130,6 +130,8 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
 
         registerCommands();
 
+        new Updater(this);
+
         this.getComponentLogger().info(
                 "Terraplusminus successfully enabled ({} v{}, {} v{})",
                 this.getName(),
