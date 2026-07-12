@@ -42,11 +42,16 @@ Custom Tree Generation:
 
 # Commands and Permissions
 
-`/tpll <latitudes> <longitudes> [height]` - Permission node: `t+-.tpll`
+`/tpll <latitudes> <longitudes> [height]` - Permission node: `t+-.tpll` + `t+-.tpll.otherWorld` when teleporting from
+another world
+
+`/tpll -p <player>` <latitudes> <longitudes> [height] - Permission node:`t+-.forcetpll`
 
 `/where` - Permission node: `t+-.where`
 
 `/offset` - Permission node: `t+-.offset`
+
+`/distortion` - Permission node: `t+-.distortion`
 
 Permission node: `t+-.admin` - Bypasses the coordinate bounds of tpll
 
@@ -55,7 +60,7 @@ Permission node: `t+-.autoteleport` - Enables automatic teleportation between li
 # Installation
 
 1. Download the latest release
-   of [Terra+- here](https://github.com/BTE-Germany/TerraPlusMinus/releases) and add it
+   of [Terra+- here](https://github.com/BTE-Germany/TerraPlusMinus/releases/latest) and add it
    to your plugin folder
 2. Add these lines at the end of your `bukkit.yml` and replace "world" with the name of the server's main world name
 
