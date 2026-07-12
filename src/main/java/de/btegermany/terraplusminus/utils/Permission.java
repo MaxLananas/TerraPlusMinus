@@ -7,7 +7,12 @@ import org.jspecify.annotations.NonNull;
 public enum Permission {
     DISTORTION_CMD(Properties.NonConfigurable.PERMISSION_PREFIX + "distortion"),
     OFFSET_CMD(Properties.NonConfigurable.PERMISSION_PREFIX + "offset"),
-    WHERE_CMD(Properties.NonConfigurable.PERMISSION_PREFIX + "where");
+    WHERE_CMD(Properties.NonConfigurable.PERMISSION_PREFIX + "where"),
+    TPLL_CMD(Properties.NonConfigurable.PERMISSION_PREFIX + "tpll"),
+    TPLL_OTHER_WORLD_CMD(TPLL_CMD.node + ".otherWorld"),
+    FORCETPLL_CMD(Properties.NonConfigurable.PERMISSION_PREFIX + "forcetpll"),
+    ADMIN(Properties.NonConfigurable.PERMISSION_PREFIX + "admin"),
+    AUTOTELEPORT(Properties.NonConfigurable.PERMISSION_PREFIX + "autoteleport");
 
     private final String node;
 

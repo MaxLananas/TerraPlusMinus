@@ -11,6 +11,7 @@ import de.btegermany.terraplusminus.Terraplusminus;
 import de.btegermany.terraplusminus.gen.RealWorldGenerator;
 import de.btegermany.terraplusminus.utils.ConfigurationHelper;
 import de.btegermany.terraplusminus.utils.LinkedWorld;
+import de.btegermany.terraplusminus.utils.Permission;
 import de.btegermany.terraplusminus.utils.Properties;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -62,7 +63,6 @@ public class TpllCommand {
 
     // <editor-fold desc="Constants and Fields">
     public static final String LAT_LON_HEIGHT = "latLonHeight";
-    public static final String TPLL_OTHERS_PERMISSION = "t+-.forcetpll";
 
     static String prefix;
     // </editor-fold>
@@ -97,7 +97,7 @@ public class TpllCommand {
         RealWorldGenerator terraGenerator = null;
         if (!(generator instanceof RealWorldGenerator tg)) {
             var worlds = Bukkit.getWorlds();
-            if (target.hasPermission("t+-.tpll.otherWorld")) {
+            if (Permission.TPLL_OTHER_WORLD_CMD.isGrantedTo(target)) {
                 for (var world : worlds) {
                     if (world.getGenerator() instanceof RealWorldGenerator gen) {
                         terraGenerator = gen;
@@ -140,7 +140,7 @@ public class TpllCommand {
         boolean playerItselfIsTeleporting = sender == target;
 
         if (playerItselfIsTeleporting && minLat != 0 && maxLat != 0 && minLon != 0 && maxLon != 0 &&
-                !sender.hasPermission("t+-.admin") &&
+                !Permission.ADMIN.isGrantedTo(sender) &&
                 (latLngHeight.latLng().getLat() < minLat || latLngHeight.latLng().getLng() < minLon || latLngHeight.latLng().getLat() > maxLat || latLngHeight.latLng().getLng() > maxLon)) {
             sender.sendMessage(prefix + "§cYou cannot tpll to these coordinates, because this area is being worked on by another build team.");
             return;
@@ -386,7 +386,7 @@ public class TpllCommand {
         // This is the cleanest solution that works reliably with Brigadier.
         return Commands.literal("tpll")
                 .then(Commands.literal("-p")
-                        .requires(source -> source.getSender().hasPermission(TPLL_OTHERS_PERMISSION))
+                        .requires(source -> Permission.ADMIN.isGrantedTo(source.getSender()))
                         .then(Commands.argument("players", ArgumentTypes.players())
                                 .then(Commands.argument(LAT_LON_HEIGHT, StringArgumentType.greedyString())
                                         .executes(TpllCommand::executeTarget)
@@ -441,15 +441,15 @@ public class TpllCommand {
      * Checks for {@code t+-.forcetpll} or {@code t+-.tpll} (if self-teleporting).
      */
     private static boolean isPermitted(@NonNull CommandSourceStack source) {
-        return source.getSender().hasPermission(TPLL_OTHERS_PERMISSION) ||
-                (source.getSender() == source.getExecutor() && source.getSender().hasPermission("t+-.tpll"));
+        return Permission.ADMIN.isGrantedTo(source.getSender()) ||
+                (source.getSender() == source.getExecutor() && Permission.TPLL_OTHER_WORLD_CMD.isGrantedTo(source.getSender()));
     }
 
     /**
      * Checks for {@code t+-.forcetpll} permission.
      */
     private static boolean isPermittedTarget(@NonNull CommandSourceStack commandSourceStack) {
-        return commandSourceStack.getSender().hasPermission(TPLL_OTHERS_PERMISSION);
+        return Permission.ADMIN.isGrantedTo(commandSourceStack.getSender());
     }
     // </editor-fold>
 
