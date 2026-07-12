@@ -401,7 +401,7 @@ public final class Terraplusminus extends JavaPlugin implements Listener {
     }
 
     private void setupTerraMinusMinus() {
-        FolderMigrator.migrateTerraPlusPlusFolder();
+        FolderMigrator.migrateTerraPlusPlusFolder(getComponentLogger(), getDataFolder());
         Disk.setConfigRoot(this.getDataFolder());
         Disk.setCacheRoot(this.getDataPath().resolve("cache").toFile());
 
