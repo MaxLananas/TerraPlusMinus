@@ -4,6 +4,7 @@ plugins {
     `java-library`
     alias(libs.plugins.lombok)
     alias(libs.plugins.plugin.yml)
+    alias(libs.plugins.sonarqube)
 }
 
 repositories {
