@@ -21,6 +21,8 @@ lombok = "9.5.0"
 plugin-yml = "0.9.0"
 # https://plugins.gradle.org/plugin/org.sonarqube - for CI
 sonarqube = "7.3.1.8318"
+# https://github.com/GradleUp/shadow/releases
+shadow = "9.4.3"
 
 [libraries]
 bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
@@ -35,3 +37,4 @@ terraminusminus = { module = "net.buildtheearth.terraminusminus:terraminusminus-
 lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
 plugin-yml = { id = "de.eldoria.plugin-yml.paper", version.ref = "plugin-yml" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
