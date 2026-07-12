@@ -2,6 +2,7 @@ package de.btegermany.terraplusminus.events;
 
 import de.btegermany.terraplusminus.utils.ConfigurationHelper;
 import de.btegermany.terraplusminus.utils.LinkedWorld;
+import de.btegermany.terraplusminus.utils.Permission;
 import de.btegermany.terraplusminus.utils.Properties;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
@@ -85,14 +86,10 @@ public class PlayerMoveEvent implements Listener {
 
         Player p = event.getPlayer();
 
-        if (!p.hasPermission("t+-.autoteleport")) {
-            return;
-        }
+        if (Permission.AUTOTELEPORT.isGrantedTo(p)) return;
 
         // Prevent repeated scheduling while on cooldown
-        if (isOnTeleportCooldown(p)) {
-            return;
-        }
+        if (isOnTeleportCooldown(p)) return;
 
         World world = p.getWorld();
         Location location = p.getLocation();

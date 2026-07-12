@@ -77,7 +77,7 @@ public class RealWorldGenerator extends ChunkGenerator {
             SNOW
     );
 
-    public RealWorldGenerator(int yOffset, @NotNull Terraplusminus plugin) {
+    public RealWorldGenerator(int yOffset, @NonNull Terraplusminus plugin) {
 
         Http.configChanged(); // This ensures the T-- default config is loaded regarding the number of concurrent http requests for specific urls.
 

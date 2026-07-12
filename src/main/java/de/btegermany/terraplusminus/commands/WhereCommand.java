@@ -1,6 +1,7 @@
 package de.btegermany.terraplusminus.commands;
 
 import de.btegermany.terraplusminus.Terraplusminus;
+import de.btegermany.terraplusminus.utils.Permission;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.buildtheearth.terraminusminus.generator.EarthGeneratorSettings;
@@ -10,6 +11,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -19,15 +21,14 @@ public class WhereCommand implements BasicCommand {
     private final EarthGeneratorSettings bteGeneratorSettings = EarthGeneratorSettings.parse(EarthGeneratorSettings.BTE_DEFAULT_SETTINGS);
 
     @Override
+    public boolean canUse(final @NonNull CommandSender sender) {
+        return sender instanceof Player && Permission.WHERE_CMD.isGrantedTo(sender);
+    }
+
+    @Override
     public void execute(@NonNull CommandSourceStack stack, String @Nullable [] args) {
-        if (!(stack.getSender() instanceof Player player)) {
-            stack.getSender().sendMessage("This command can only be used by players!");
-            return;
-        }
-        if (!player.hasPermission("t+-.where")) {
-            player.sendMessage(Terraplusminus.config.getString("prefix") + "§7No permission for /where");
-            return;
-        }
+        if (!(stack.getSender() instanceof Player player)) return; // Will not happen because of Brigadier
+
         int xOffset = Terraplusminus.config.getInt("terrain_offset.x");
         int zOffset = Terraplusminus.config.getInt("terrain_offset.z");
 
