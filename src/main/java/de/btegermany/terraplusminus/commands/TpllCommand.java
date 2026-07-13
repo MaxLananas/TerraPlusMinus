@@ -77,6 +77,8 @@ public class TpllCommand {
      *     <li>Validates the world is a Terraplusminus world</li>
      *     <li>Parses the coordinates from the arguments</li>
      *     <li>Checks boundary restrictions</li>
+     *     <li>Checks if the destination chunk is already generated when the player lacks
+     *         {@code t+-.tpll.newchunks}, considering all linked Multiverse worlds when applicable</li>
      *     <li>Handles cross-world teleportation if needed</li>
      *     <li>Performs the actual teleport</li>
      * </ol>
@@ -117,6 +119,7 @@ public class TpllCommand {
         } else {
             terraGenerator = tg;
         }
+
         EarthGeneratorSettings generatorSettings = terraGenerator.getSettings();
         GeographicProjection projection = generatorSettings.projection();
         LatLongHeight latLngHeight = parseArguments(args);
@@ -144,6 +147,20 @@ public class TpllCommand {
                 (latLngHeight.latLng().getLat() < minLat || latLngHeight.latLng().getLng() < minLon || latLngHeight.latLng().getLat() > maxLat || latLngHeight.latLng().getLng() > maxLon)) {
             sender.sendMessage(prefix + "§cYou cannot tpll to these coordinates, because this area is being worked on by another build team.");
             return;
+        }
+
+        if (!Permission.TPLL_NEW_CHUNKS.isGrantedTo(sender)) {
+            int destinationChunkX = ChunkPos.blockToCube((int) Math.round(x));
+            int destinationChunkZ = ChunkPos.blockToCube((int) Math.round(z));
+
+            if (!isChunkGeneratedInAnyRelevantWorld(tpWorld, destinationChunkX, destinationChunkZ, config)) {
+                Terraplusminus.instance.getComponentLogger().debug(
+                        "Player {} tried to tpll to an ungenerated chunk ({}, {}) without permission {}",
+                        target.getName(), destinationChunkX, destinationChunkZ, Permission.TPLL_NEW_CHUNKS.getNode()
+                );
+                sender.sendMessage(prefix + "§cYou don't have permission to teleport to an ungenerated area.");
+                return;
+            }
         }
 
         int yOffset = terraGenerator.getYOffset();
@@ -188,6 +205,62 @@ public class TpllCommand {
         } else {
             finalizeTeleport(target, tpWorld, new Vector(x, latLngHeight.height() + yOffset, z), latLngHeight.latLng(), yOffset);
         }
+    }
+
+    /**
+     * Checks whether the destination chunk is already generated in at least one relevant world.
+     * <p>
+     * For a standard (non-Multiverse) setup, only {@code tpWorld} is checked.
+     * For a Multiverse linked worlds setup, all configured linked worlds are checked,
+     * because the final teleport destination may land in a different world depending on the target height.
+     * The chunk is considered generated if it exists in at least one of the linked worlds.
+     *
+     * @param tpWorld           The primary resolved T+- world
+     * @param destinationChunkX The chunk X coordinate of the destination
+     * @param destinationChunkZ The chunk Z coordinate of the destination
+     * @param config            The plugin configuration
+     * @return {@code true} if the chunk is generated in at least one relevant world, {@code false} otherwise
+     */
+    private static boolean isChunkGeneratedInAnyRelevantWorld(@NonNull World tpWorld,
+                                                               int destinationChunkX,
+                                                               int destinationChunkZ,
+                                                               @NonNull FileConfiguration config) {
+        boolean isMultiverse = config.getBoolean(Properties.LINKED_WORLDS_ENABLED)
+                && config.getString(Properties.LINKED_WORLDS_METHOD, "")
+                         .equalsIgnoreCase(Properties.NonConfigurable.METHOD_MV);
+
+        if (!isMultiverse) {
+            // Simple case: no linked worlds, just check the main world
+            return tpWorld.isChunkGenerated(destinationChunkX, destinationChunkZ);
+        }
+
+        // Multiverse case: the target height may exceed tpWorld's bounds and land in another linked world.
+        // We consider the chunk "generated" if it is generated in ANY of the configured linked worlds,
+        // since we cannot know yet which world will be the final destination before computing the height.
+        List<LinkedWorld> linkedWorlds = ConfigurationHelper.getWorlds();
+        for (LinkedWorld linkedWorld : linkedWorlds) {
+            World bukkitWorld = Bukkit.getWorld(linkedWorld.getWorldName());
+            if (bukkitWorld == null) {
+                Terraplusminus.instance.getComponentLogger().debug(
+                        "Linked world '{}' is configured but not loaded, skipping chunk generation check for it.",
+                        linkedWorld.getWorldName()
+                );
+                continue;
+            }
+            if (bukkitWorld.isChunkGenerated(destinationChunkX, destinationChunkZ)) {
+                Terraplusminus.instance.getComponentLogger().debug(
+                        "Chunk ({}, {}) is already generated in linked world '{}'.",
+                        destinationChunkX, destinationChunkZ, linkedWorld.getWorldName()
+                );
+                return true;
+            }
+        }
+
+        Terraplusminus.instance.getComponentLogger().debug(
+                "Chunk ({}, {}) is not generated in any of the {} configured linked worlds.",
+                destinationChunkX, destinationChunkZ, linkedWorlds.size()
+        );
+        return false;
     }
 
     /**
@@ -510,7 +583,7 @@ public class TpllCommand {
     }
 
     /**
-     * Gets all objects in a string array under a given index
+     * Gets all objects in a string array under a given index.
      * Example: {@code inverseSelectArray(["a", "b", "c"], 2)} → {@code ["a", "b"]}
      *
      * @param args    Initial array
