@@ -1,4 +1,5 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
     `java-library`
@@ -10,11 +11,8 @@ plugins {
 
 repositories {
     mavenCentral()
-    // mavenLocal() - Only use this for testing if ever
 
-    //maven("https://maven.smyler.net/releases/")
-
-    maven("https://maven.buildtheearth.net/releases") // T-- & Porkchop Lib
+    maven("https://maven.buildtheearth.net/releases")
 
     exclusiveContent {
         forRepository {
@@ -22,8 +20,6 @@ repositories {
                 url = uri("https://repo.papermc.io/repository/maven-public/")
             }
         }
-        // Ensure papermc repo is only used for paper dependencies
-        // Paper also proxies maven central, which has some issues - see https://github.com/PaperMC/Paper/issues/13987
         filter {
             includeGroup("io.papermc")
             includeGroup("io.papermc.paper")
@@ -32,7 +28,7 @@ repositories {
         }
     }
 
-    maven("https://repo.lushplugins.org/releases") // PluginUpdater
+    maven("https://repo.lushplugins.org/releases")
 }
 
 dependencies {
@@ -42,15 +38,15 @@ dependencies {
     paperLibrary(libs.pluginupdater.common) {
         exclude(group = "com.google.guava", module = "guava")
     }
+    paperLibrary(libs.jspecify)
     paperLibrary(libs.pluginupdater.paper)
     compileOnly(libs.paper.api)
-    // Terra+- itself doesn't need Jackson, but we are hitting this JDK bug: https://bugs.openjdk.org/browse/JDK-8305250.
-    // Having a direct compile dependency on Jackson gets rid of the unnecessary warning.
     compileOnly(libs.jackson.databind)
+    compileOnly(libs.jetbrains.annotations)
 }
 
 group = "de.btegermany"
-version = "1.7.0"
+version = "1.7.2-SNAPSHOT"
 description = "A plugin which implements the terra-- api in a paper plugin"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -67,7 +63,7 @@ paper {
 
     main = "de.btegermany.terraplusminus.Terraplusminus"
 
-    apiVersion = "1.21.4"
+    apiVersion = "1.21"
 
     load = BukkitPluginDescription.PluginLoadOrder.STARTUP
     authors = listOf("meysster", "Nudlsupp", "Nachwahl", "Zoriot")
@@ -75,7 +71,61 @@ paper {
     prefix = "T+-"
 
     loader = "de.btegermany.terraplusminus.PluginLibrariesLoader"
-    generateLibrariesJson = true // https://docs.eldoria.de/pluginyml/libraries/#paper
+    generateLibrariesJson = true
+
+    permissions {
+        register("t+-.admin") {
+            description = "Grants all Terraplusminus permissions"
+            default = BukkitPluginDescription.Permission.Default.OP
+            children = mapOf(
+                "t+-.tpll" to true,
+                "t+-.forcetpll" to true,
+                "t+-.where" to true,
+                "t+-.offset" to true,
+                "t+-.distortion" to true,
+                "t+-.notify.update" to true
+            )
+        }
+        register("t+-.tpll") {
+            description = "Allows usage of /tpll"
+            default = BukkitPluginDescription.Permission.Default.TRUE
+            children = mapOf(
+                "t+-.tpll.ungenerated-chunks" to true
+            )
+        }
+        register("t+-.tpll.ungenerated-chunks") {
+            description = "Allows teleporting to chunks that have not been generated yet"
+            default = BukkitPluginDescription.Permission.Default.TRUE
+        }
+        register("t+-.tpll.otherWorld") {
+            description = "Allows /tpll to resolve a T+- world when the player is in a non-T+- world"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("t+-.forcetpll") {
+            description = "Allows force-teleporting other players with /tpll -p"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("t+-.where") {
+            description = "Allows usage of /where"
+            default = BukkitPluginDescription.Permission.Default.TRUE
+        }
+        register("t+-.offset") {
+            description = "Allows usage of /offset"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("t+-.distortion") {
+            description = "Allows usage of /distortion"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("t+-.autoteleport") {
+            description = "Exempts a player from automatic cross-world teleportation on height boundary crossing"
+            default = BukkitPluginDescription.Permission.Default.FALSE
+        }
+        register("t+-.notify.update") {
+            description = "Notifies the player about available plugin updates"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+    }
 }
 
 tasks {
@@ -86,7 +136,7 @@ tasks {
 
 tasks.jar {
     archiveClassifier = "UNSHADED"
-    enabled = false // Disable the default jar task since we are using shadowJar
+    enabled = false
 }
 
 tasks.shadowJar {
@@ -98,5 +148,5 @@ tasks.shadowJar {
 }
 
 tasks.assemble {
-    dependsOn(tasks.shadowJar) // Ensure that the shadowJar task runs before the build task
+    dependsOn(tasks.shadowJar)
 }
